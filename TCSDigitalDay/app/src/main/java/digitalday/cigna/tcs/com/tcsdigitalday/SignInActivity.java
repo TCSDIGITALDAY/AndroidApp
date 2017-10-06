@@ -5,6 +5,7 @@ package digitalday.cigna.tcs.com.tcsdigitalday;
  */
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +22,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 
 public class SignInActivity extends AppCompatActivity
@@ -45,7 +45,7 @@ public class SignInActivity extends AppCompatActivity
         // Set up click handlers and view item references
         findViewById(R.id.btnCreate).setOnClickListener(this);
         findViewById(R.id.btnSignIn).setOnClickListener(this);
-        findViewById(R.id.btnSignOut).setOnClickListener(this);
+        //findViewById(R.id.btnSignOut).setOnClickListener(this);
 
         etEmail = (EditText)findViewById(R.id.etEmailAddr);
         etPass = (EditText)findViewById(R.id.etPassword);
@@ -73,7 +73,7 @@ public class SignInActivity extends AppCompatActivity
             }
         };
 
-        updateStatus();
+        //updateStatus();
     }
 
     /**
@@ -103,13 +103,13 @@ public class SignInActivity extends AppCompatActivity
                 signUserIn();
                 break;
 
-            case R.id.btnCreate:
+           case R.id.btnCreate:
                 createUserAccount();
                 break;
 
-            case R.id.btnSignOut:
+            /*case R.id.btnSignOut:
                 signUserOut();
-                break;
+                break;*/
         }
     }
 
@@ -131,7 +131,7 @@ public class SignInActivity extends AppCompatActivity
         return true;
     }
 
-    private void updateStatus() {
+   /* private void updateStatus() {
         TextView tvStat = (TextView)findViewById(R.id.tvSignInStatus);
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -141,7 +141,7 @@ public class SignInActivity extends AppCompatActivity
             tvStat.setText("Signed Out");
         }
     }
-
+*/
     private void updateStatus(String stat) {
         TextView tvStat = (TextView)findViewById(R.id.tvSignInStatus);
         tvStat.setText(stat);
@@ -169,7 +169,7 @@ public class SignInActivity extends AppCompatActivity
                                             .show();
                                 }
 
-                                updateStatus();
+                                //updateStatus();
                             }
                         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -191,17 +191,21 @@ public class SignInActivity extends AppCompatActivity
     private void signUserOut() {
         // TODO: sign the user out
         mAuth.signOut();
-        updateStatus();
+        //updateStatus();
     }
 
     private void createUserAccount() {
-        if (!checkFormFields())
+        Intent registerIntent = new Intent(SignInActivity.this, RegisterActivity.class);
+        //myIntent.putExtra("key", value); //Optional parameters
+        SignInActivity.this.startActivity(registerIntent);
+
+       /* if (!checkFormFields())
             return;
 
         String email = etEmail.getText().toString();
         String password = etPass.getText().toString();
 
-        // TODO: Create the user account
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this,
                         new OnCompleteListener<AuthResult>() {
@@ -231,7 +235,7 @@ public class SignInActivity extends AppCompatActivity
                         Toast.makeText(SignInActivity.this, "Inside addOnFailureListener", Toast.LENGTH_SHORT)
                                 .show();
                     }
-                });
+                });*/
     }
 }
 
