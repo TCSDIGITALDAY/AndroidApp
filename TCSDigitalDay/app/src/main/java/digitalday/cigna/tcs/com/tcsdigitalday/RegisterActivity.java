@@ -1,15 +1,18 @@
 package digitalday.cigna.tcs.com.tcsdigitalday;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,12 +53,18 @@ public class RegisterActivity  extends AppCompatActivity
     private EditText etEmail,etfirstname,etlastname;
     public TextView hiddenText;
     public String advid=null,taskResult=null;
+    public Button btnCreate;
+    public ProgressDialog progressDialog;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
         // Set up click handlers and view item references
         findViewById(R.id.btnCreate).setOnClickListener(this);
+
+        btnCreate=(Button)findViewById(R.id.btnCreate);
+        //btnCreate.setEnabled(false);
+        btnCreate.setVisibility(View.INVISIBLE);
         //findViewById(R.id.btnSignIn).setOnClickListener(this);
         //findViewById(R.id.btnSignOut).setOnClickListener(this);
 
@@ -69,6 +78,7 @@ public class RegisterActivity  extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        reqPermissionCheck();
         // TODO: Attach a new AuthListener to detect sign in and out
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -150,6 +160,8 @@ public class RegisterActivity  extends AppCompatActivity
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
+
+                                    //progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
                                     String mail = etEmail.getText().toString();
                                     String firstname=etfirstname.getText().toString();
                                     String lastname=etlastname.getText().toString();
@@ -167,6 +179,15 @@ public class RegisterActivity  extends AppCompatActivity
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
+                        //progressDialog.show();
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                progressDialog.dismiss();
+                            }
+                        }, 3000); // 3000 milliseconds delay
                         Log.e(TAG, e.toString());
                         if (e instanceof FirebaseAuthUserCollisionException) {
                             updateStatus("This email address is already in use.");
@@ -182,10 +203,19 @@ public class RegisterActivity  extends AppCompatActivity
 
 
     private void writeNewUser( String fname,String lname, String password, String email) {
+        progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
+        //progressDialog.show();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                progressDialog.dismiss();
+            }
+        }, 3000); // 3000 milliseconds delay
         Log.e(TAG, "Add New User to Firebase !!!");
         Users user = new Users();
         //user.setDeviceid(advid);
-        reqPermissionCheck();
+
         user.setDeviceid(advid);
         //user.setDeviceid("1234547");
 
@@ -196,6 +226,7 @@ public class RegisterActivity  extends AppCompatActivity
         String userId = mDatabase.child("users").push().getKey();
         mDatabase.child("users").child(userId).setValue(user);
         Log.e(TAG, "Add New User to Firebase Completed!!!");
+        //progressDialog.dismiss();
     }
 
     private String getDeviceId(){
@@ -228,7 +259,12 @@ public class RegisterActivity  extends AppCompatActivity
         UniqueAdvertisingId uniqueId=new UniqueAdvertisingId(this,hiddenText);
         uniqueId.execute();
         //String advertiseid=hiddenText.getText().toString();
+        Log.i(TAG,hiddenText.getText().toString());
+        Toast.makeText(RegisterActivity.this, "HiddenText:"+hiddenText.getText().toString(), Toast.LENGTH_SHORT)
+                .show();
+
         String advertiseid=taskResult;
+        advertiseid=hiddenText.getText().toString();
         Toast.makeText(RegisterActivity.this, "Advertiseid:"+advertiseid, Toast.LENGTH_SHORT)
                 .show();
         return advertiseid;
@@ -297,18 +333,27 @@ protected String doInBackground(Void... params) {
         } catch (NullPointerException e) {
         e.printStackTrace();
         }
+        //Log.i(TAG,advertId);
 
         return advertId;
         }
+
+        @Override
+        protected void onPreExecute() {
+        mActivity.progressDialog = ProgressDialog.show(context, "", "Getting Advertise Id", true);
+    }
 
 @Override
 protected void onPostExecute(String advertId) {
         Toast.makeText(context.getApplicationContext(), "Inside On PostExecute:"+advertId, Toast.LENGTH_SHORT).show();
         //TextView txtAdvertId = (TextView)
             mActivity.taskResult=advertId;
-        //hiddenView.setText(advertId);
-
-        //sendAdvertId(advertId);
+            hiddenView.setText(advertId);
+            //mActivity.btnCreate.setEnabled(true);
+            mActivity.advid=advertId;
+            mActivity.btnCreate.setVisibility(View.VISIBLE);
+            mActivity.progressDialog.dismiss();
+    //sendAdvertId(advertId);
         }
 /*public String sendAdvertId(String advertId)
 {

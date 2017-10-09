@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "digitalday.cigna.tcs.com.tcsdigitalday"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -30,6 +30,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:9.0.2'
     compile 'com.google.firebase:firebase-config:9.0.2'
     compile 'com.google.android.gms:play-services:9.0.2'
+    compile 'com.estimote:sdk:1.0.12'
 
 }
 

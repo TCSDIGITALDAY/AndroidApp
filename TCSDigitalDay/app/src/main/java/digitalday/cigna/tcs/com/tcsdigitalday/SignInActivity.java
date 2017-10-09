@@ -5,6 +5,7 @@ package digitalday.cigna.tcs.com.tcsdigitalday;
  */
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ public class SignInActivity extends AppCompatActivity
 
     private EditText etPass;
     private EditText etEmail;
+    public ProgressDialog progressDialog;
 
     /**
      * Standard Activity lifecycle methods
@@ -60,10 +62,17 @@ public class SignInActivity extends AppCompatActivity
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+                    progressDialog = ProgressDialog.show(SignInActivity.this, "", "Finding Where you are", true);
                     Log.d(TAG, "Signed in: " + user.getUid());
 
                     Toast.makeText(SignInActivity.this, "Signed in "+user.getUid(), Toast.LENGTH_SHORT)
                             .show();
+                   progressDialog.dismiss();
+                    Intent beaconIntent = new Intent(SignInActivity.this, MainActivity.class);
+                    //myIntent.putExtra("key", value); //Optional parameters
+                    SignInActivity.this.startActivity(beaconIntent);
+
+
                 } else {
                     // User is signed out
                     Log.d(TAG, "Currently signed out");
@@ -147,6 +156,7 @@ public class SignInActivity extends AppCompatActivity
         tvStat.setText(stat);
     }
 
+
     private void signUserIn() {
         if (!checkFormFields())
             return;
@@ -163,6 +173,7 @@ public class SignInActivity extends AppCompatActivity
                                 if (task.isSuccessful()) {
                                     Toast.makeText(SignInActivity.this, "Signed in", Toast.LENGTH_SHORT)
                                             .show();
+
                                 }
                                 else {
                                     Toast.makeText(SignInActivity.this, "Sign in failed", Toast.LENGTH_SHORT)
