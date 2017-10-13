@@ -3,18 +3,23 @@ package digitalday.cigna.tcs.com.tcsdigitalday;
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     public String uid;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    NestedScrollView mBottomSheet;
+    BottomSheetBehavior mBottomSheetBehavior;
+    ImageView mfrescoTalk;
+    ImageView mfrescoPlay;
     /*public  Map<String, List<String>> PLACES_BY_BEACONS;*/
     public  Map<String, String> PLACES_BY_BEACONS=new HashMap<>();;
     private final int REQUEST_CODE=20,RESULT_CLOSE_APPLICATION=30;
@@ -95,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtBeaconmsg = (TextView) findViewById(R.id.tcs_greeting);
+        mBottomSheet = (NestedScrollView)findViewById(R.id.bottom_sheet);
+        mfrescoTalk = (ImageView) findViewById(R.id.frescotalk_img);
+        mfrescoPlay = (ImageView) findViewById(R.id.frescoplay_img);
+        mBottomSheetBehavior = BottomSheetBehavior.from(mBottomSheet);
+        mBottomSheetBehavior.setPeekHeight(200);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 //        String userId = mDatabase.child("users").push().getKey();
@@ -102,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
         String email = getIntent().getStringExtra("USER_EMAIL");
         Log.d("MAIN_ACT","User UID "+userId);
         Log.d("MAIN_ACT","User Email "+email);
-        ActionBar actionBar = getActionBar();
+        /*ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);*/
         beaconData=new ArrayList<>();
         mUserData = mDatabase.child("users").child(userId);
         mMessages=  mDatabase.child("messages").child("0");
@@ -139,7 +153,19 @@ public class MainActivity extends AppCompatActivity {
 
                         PLACES_BY_BEACONS = Collections.unmodifiableMap(placesByBeacons);
                         Log.d(TAG,"Check Beacon Id"+PLACES_BY_BEACONS.get("7329:22744"));
-                                            }
+
+                        mfrescoTalk.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                openFrescoPackage("com.tcs.fresco.talk");
+                            }
+                        });
+                        mfrescoPlay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                openFrescoPackage("com.tcs.fresco.frescoplay");
+                            }
+                        });                   }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -329,10 +355,19 @@ public class MainActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if((progressDialog != null) && progressDialog.isShowing() ){
+            progressDialog.dismiss();
+        }
+    }
 
     @Override
     public void onBackPressed() {
         finish();
+        return;
 //        super.onBackPressed();
     }
 
@@ -363,6 +398,19 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    public void openFrescoPackage(String packageName) {
+        final PackageManager packageManager = getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(packageName);
+        if (intent == null) {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://play.fresco.me/"));
+            startActivity(intent);
+        }
+//        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+//        return list.size() > 0;
+        startActivity(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -390,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
 
             case android.R.id.home:
                 MainActivity.this.finish();
+                NavUtils.navigateUpFromSameTask(this);
                 return true;
 
 

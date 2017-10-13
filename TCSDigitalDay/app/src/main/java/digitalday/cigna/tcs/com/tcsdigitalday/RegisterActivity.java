@@ -180,8 +180,8 @@ public class RegisterActivity  extends AppCompatActivity
                                     Toast.makeText(RegisterActivity.this, "Account creation failed", Toast.LENGTH_SHORT)
                                             .show();
                                 }
-                                Toast.makeText(RegisterActivity.this, "Inside addOnCompleteListener", Toast.LENGTH_SHORT)
-                                        .show();
+                              /*  Toast.makeText(RegisterActivity.this, "Inside addOnCompleteListener", Toast.LENGTH_SHORT)
+                                        .show();*/
                             }
                         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -193,7 +193,9 @@ public class RegisterActivity  extends AppCompatActivity
                         Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                progressDialog.dismiss();
+                                if(progressDialog!=null && progressDialog.isShowing()) {
+                                    progressDialog.dismiss();
+                                }
                             }
                         }, 3000); // 3000 milliseconds delay
                         Log.e(TAG, e.toString());
@@ -203,12 +205,21 @@ public class RegisterActivity  extends AppCompatActivity
                         else {
                             updateStatus(e.getLocalizedMessage());
                         }
-                        Toast.makeText(RegisterActivity.this, "Inside addOnFailureListener", Toast.LENGTH_SHORT)
+                        Toast.makeText(RegisterActivity.this, "Failed", Toast.LENGTH_SHORT)
                                 .show();
                     }
                 });
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if((progressDialog != null) && progressDialog.isShowing() ){
+            progressDialog.dismiss();
+        }
+    }
 
     private void writeNewUser( String uid,String fname,String lname, String password, String email) {
         progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
@@ -268,13 +279,13 @@ public class RegisterActivity  extends AppCompatActivity
         uniqueId.execute();
         //String advertiseid=hiddenText.getText().toString();
         Log.i(TAG,hiddenText.getText().toString());
-        Toast.makeText(RegisterActivity.this, "HiddenText:"+hiddenText.getText().toString(), Toast.LENGTH_SHORT)
-                .show();
+        /*Toast.makeText(RegisterActivity.this, "HiddenText:"+hiddenText.getText().toString(), Toast.LENGTH_SHORT)
+                .show();*/
 
         String advertiseid=taskResult;
         advertiseid=hiddenText.getText().toString();
-        Toast.makeText(RegisterActivity.this, "Advertiseid:"+advertiseid, Toast.LENGTH_SHORT)
-                .show();
+       /* Toast.makeText(RegisterActivity.this, "Advertiseid:"+advertiseid, Toast.LENGTH_SHORT)
+                .show();*/
         return advertiseid;
     }
 
@@ -353,7 +364,7 @@ protected String doInBackground(Void... params) {
 
 @Override
 protected void onPostExecute(String advertId) {
-        Toast.makeText(context.getApplicationContext(), "Inside On PostExecute:"+advertId, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context.getApplicationContext(), "Inside On PostExecute:"+advertId, Toast.LENGTH_SHORT).show();
         //TextView txtAdvertId = (TextView)
             mActivity.taskResult=advertId;
             hiddenView.setText(advertId);

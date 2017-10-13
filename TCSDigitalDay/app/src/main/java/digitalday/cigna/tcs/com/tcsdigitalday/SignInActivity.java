@@ -7,6 +7,7 @@ package digitalday.cigna.tcs.com.tcsdigitalday;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -24,9 +25,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SignInActivity extends AppCompatActivity
         implements View.OnClickListener{
@@ -35,7 +38,7 @@ public class SignInActivity extends AppCompatActivity
     //private int requestCode = 10;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    private SharedPreferences mPrefs;
     private EditText etPass;
     private EditText etEmail;
     public ProgressDialog progressDialog,signInWait;
@@ -93,6 +96,7 @@ public class SignInActivity extends AppCompatActivity
         };
 
         //updateStatus();
+        mPrefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
     }
 
 
@@ -125,6 +129,16 @@ public class SignInActivity extends AppCompatActivity
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mPrefs.getBoolean("FIRST_RUN",true)){
+            FirebaseMessaging.getInstance().subscribeToTopic("EVENTS");
+            mPrefs.edit().putBoolean("FIRST_RUN", false).commit();
+        }
+    }
+
 
     @Override
     public void onClick(View v) {

@@ -4,11 +4,10 @@
     <item
         android:drawable="@color/gray"/>
 
-    <item
-        android:drawable="@drawable/ic_drawing"
-        android:gravity="center"
-        android:height="300dp"
-        android:width="300dp"/>
-
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap/digitacompletefinal"/>
+    </item>
 
 </layer-list>
