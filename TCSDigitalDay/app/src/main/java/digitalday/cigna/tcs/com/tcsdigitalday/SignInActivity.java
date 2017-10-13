@@ -24,17 +24,22 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity
         implements View.OnClickListener{
-    private final String TAG = "FB_SIGNIN";
-
+    private final String TAG = "SIGNIN_ACT";
+    private final int REQUEST_CODE=20,RESULT_CLOSE_APPLICATION=30;
+    //private int requestCode = 10;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     private EditText etPass;
     private EditText etEmail;
-    public ProgressDialog progressDialog;
+    public ProgressDialog progressDialog,signInWait;
+    private int requestCode = 10;
 
     /**
      * Standard Activity lifecycle methods
@@ -59,25 +64,30 @@ public class SignInActivity extends AppCompatActivity
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                progressDialog = ProgressDialog.show(SignInActivity.this, "", "Loading...", true);
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    progressDialog = ProgressDialog.show(SignInActivity.this, "", "Finding Where you are", true);
+
                     Log.d(TAG, "Signed in: " + user.getUid());
 
-                    Toast.makeText(SignInActivity.this, "Signed in "+user.getUid(), Toast.LENGTH_SHORT)
+                    Toast.makeText(SignInActivity.this, "You are Signed in ", Toast.LENGTH_SHORT)
                             .show();
                    progressDialog.dismiss();
                     Intent beaconIntent = new Intent(SignInActivity.this, MainActivity.class);
                     //myIntent.putExtra("key", value); //Optional parameters
-                    SignInActivity.this.startActivity(beaconIntent);
+                    beaconIntent.putExtra("USER_UID",mAuth.getCurrentUser().getUid());
+                    beaconIntent.putExtra("USER_EMAIL",mAuth.getCurrentUser().getEmail());
+                    //SignInActivity.this.startActivity(beaconIntent);
+                    SignInActivity.this.startActivityForResult(beaconIntent,REQUEST_CODE);
 
 
                 } else {
                     // User is signed out
                     Log.d(TAG, "Currently signed out");
-                    Toast.makeText(SignInActivity.this, "Signed Out", Toast.LENGTH_SHORT)
+                    Toast.makeText(SignInActivity.this, "Please Sign in yo Continue!!", Toast.LENGTH_SHORT)
                             .show();
+                    progressDialog.dismiss();
                 }
             }
         };
@@ -85,6 +95,17 @@ public class SignInActivity extends AppCompatActivity
         //updateStatus();
     }
 
+
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            Log.d(TAG, "Request Code:"+String.valueOf(requestCode));
+            if (resultCode == RESULT_CLOSE_APPLICATION) {
+                Log.d(TAG, "Result Code:"+String.valueOf(resultCode));
+                this.finish();
+            }
+        }
+    }
     /**
      * When the Activity starts and stops, the app needs to connect and
      * disconnect the AuthListener
@@ -153,7 +174,9 @@ public class SignInActivity extends AppCompatActivity
 */
     private void updateStatus(String stat) {
         TextView tvStat = (TextView)findViewById(R.id.tvSignInStatus);
-        tvStat.setText(stat);
+        if(tvStat!=null) {
+            tvStat.setText(stat);
+        }
     }
 
 
@@ -171,7 +194,7 @@ public class SignInActivity extends AppCompatActivity
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(SignInActivity.this, "Signed in", Toast.LENGTH_SHORT)
+                                    Toast.makeText(SignInActivity.this, "Sign in Successful", Toast.LENGTH_SHORT)
                                             .show();
 
                                 }
@@ -208,7 +231,8 @@ public class SignInActivity extends AppCompatActivity
     private void createUserAccount() {
         Intent registerIntent = new Intent(SignInActivity.this, RegisterActivity.class);
         //myIntent.putExtra("key", value); //Optional parameters
-        SignInActivity.this.startActivity(registerIntent);
+        //SignInActivity.this.startActivity(registerIntent);
+        SignInActivity.this.startActivityForResult(registerIntent,requestCode);
 
        /* if (!checkFormFields())
             return;

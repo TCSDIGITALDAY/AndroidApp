@@ -118,6 +118,12 @@ public class RegisterActivity  extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+//        super.onBackPressed();
+    }
+
     private boolean checkFormFields() {
         String email, password,firstname,lastname;
 
@@ -165,9 +171,11 @@ public class RegisterActivity  extends AppCompatActivity
                                     String mail = etEmail.getText().toString();
                                     String firstname=etfirstname.getText().toString();
                                     String lastname=etlastname.getText().toString();
-                                    writeNewUser(firstname,lastname,password,mail);
+                                    String UId=mAuth.getCurrentUser().getUid();
+                                    writeNewUser(UId,firstname,lastname,password,mail);
                                     Toast.makeText(RegisterActivity.this, "User created", Toast.LENGTH_SHORT)
                                             .show();
+                                    RegisterActivity.this.finish();
                                 } else {
                                     Toast.makeText(RegisterActivity.this, "Account creation failed", Toast.LENGTH_SHORT)
                                             .show();
@@ -202,7 +210,7 @@ public class RegisterActivity  extends AppCompatActivity
     }
 
 
-    private void writeNewUser( String fname,String lname, String password, String email) {
+    private void writeNewUser( String uid,String fname,String lname, String password, String email) {
         progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
         //progressDialog.show();
 
@@ -223,8 +231,8 @@ public class RegisterActivity  extends AppCompatActivity
         user.setFirstname(fname);
         user.setLastname(lname);
         user.setPassword(password);
-        String userId = mDatabase.child("users").push().getKey();
-        mDatabase.child("users").child(userId).setValue(user);
+        //String userId = mDatabase.child("users").push().getKey();
+        mDatabase.child("users").child(uid).setValue(user);
         Log.e(TAG, "Add New User to Firebase Completed!!!");
         //progressDialog.dismiss();
     }

@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="20dp"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp">
+        <ImageView
+            android:id="@+id/app_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="77dp"
+            android:src="@drawable/ic_drawing"
+            android:layout_gravity="right"
 
+            android:layout_weight="0.80" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/app_name"
+            android:textSize="30dp"
+            android:gravity="center_vertical"
+            android:layout_weight="0.10" />
+    </LinearLayout>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,7 +45,8 @@
         android:id="@+id/etEmailAddr"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,25 +68,36 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp">
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign In"
         android:id="@+id/btnSignIn"
-        android:layout_below="@+id/etPassword"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="25dp"
-        android:layout_alignParentLeft="true" />
+        android:gravity="center"
+        android:layout_weight="0.5"
+        android:layout_marginRight="5dp"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/white"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Register"
         android:id="@+id/btnCreate"
-        android:layout_alignBottom="@+id/btnSignIn"
-        android:layout_toEndOf="@+id/textView2"
-        android:layout_toRightOf="@+id/textView2" />
-
+        android:gravity="center"
+        android:layout_weight="0.5"
+        android:layout_marginLeft="5dp"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/white"/>
+    </LinearLayout>
    <!-- <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,4 +119,4 @@
         android:layout_marginTop="10dp" />-->
 
 
-</RelativeLayout>
+</LinearLayout>

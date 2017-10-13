@@ -44,10 +44,9 @@ public class BeaconScanner extends Application {
             @Override
             public void onEnteredRegion(BeaconRegion beaconRegion, List<Beacon> beacons) {
                 showNotification(
-                        "Your gate closes in 47 minutes.",
-                        "Current security wait time is 15 minutes, "
-                                + "and it's a 5 minute walk from security to the gate. "
-                                + "Looks like you've got plenty of time!");
+                        "TCS event is about to begin in few minutes.",
+                        "Excitement has it's new Address!!. "
+                                + "Walk to the conference room to catch up the most exciting event of the year!!");
             }
 
             @Override
@@ -62,7 +61,7 @@ public class BeaconScanner extends Application {
             public void onServiceReady() {
                 beaconManager.startMonitoring(new BeaconRegion("monitored region",
                         //UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), 22504, 48827));
-                        UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), 7329, 22744));
+                        UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), null, null));
             }
         });
     }
@@ -75,16 +74,16 @@ public class BeaconScanner extends Application {
     }
 
     public void showNotification(String title, String message) {
-        Intent notifyIntent = new Intent(this, MainActivity.class);
-        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,
-                new Intent[]{notifyIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Intent notifyIntent = new Intent(this, MainActivity.class);
+        //notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        //PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,
+          //      new Intent[]{notifyIntent}, PendingIntent.FLAG_UPDATE_CURRENT);
         Notification notification = new Notification.Builder(this)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
+                //.setContentIntent(pendingIntent)
                 .build();
         notification.defaults |= Notification.DEFAULT_SOUND;
         NotificationManager notificationManager =
