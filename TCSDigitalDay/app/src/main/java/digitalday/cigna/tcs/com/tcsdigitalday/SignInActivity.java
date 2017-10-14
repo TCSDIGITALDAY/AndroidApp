@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +42,7 @@ public class SignInActivity extends AppCompatActivity
     private SharedPreferences mPrefs;
     private EditText etPass;
     private EditText etEmail;
-    public ProgressDialog progressDialog,signInWait;
+    public ProgressBar signInWait;
     private int requestCode = 10;
 
     /**
@@ -59,6 +60,7 @@ public class SignInActivity extends AppCompatActivity
 
         etEmail = (EditText)findViewById(R.id.etEmailAddr);
         etPass = (EditText)findViewById(R.id.etPassword);
+        signInWait = (ProgressBar) findViewById(R.id.PBsignIn);
 
         // TODO: Get a reference to the Firebase auth object
         mAuth = FirebaseAuth.getInstance();
@@ -67,7 +69,7 @@ public class SignInActivity extends AppCompatActivity
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                progressDialog = ProgressDialog.show(SignInActivity.this, "", "Loading...", true);
+
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
@@ -76,21 +78,23 @@ public class SignInActivity extends AppCompatActivity
 
                     Toast.makeText(SignInActivity.this, "You are Signed in ", Toast.LENGTH_SHORT)
                             .show();
-                   progressDialog.dismiss();
+
                     Intent beaconIntent = new Intent(SignInActivity.this, MainActivity.class);
                     //myIntent.putExtra("key", value); //Optional parameters
                     beaconIntent.putExtra("USER_UID",mAuth.getCurrentUser().getUid());
                     beaconIntent.putExtra("USER_EMAIL",mAuth.getCurrentUser().getEmail());
                     //SignInActivity.this.startActivity(beaconIntent);
+                    signInWait.setVisibility(View.GONE);
                     SignInActivity.this.startActivityForResult(beaconIntent,REQUEST_CODE);
 
 
                 } else {
+                    signInWait.setVisibility(View.GONE);
                     // User is signed out
                     Log.d(TAG, "Currently signed out");
-                    Toast.makeText(SignInActivity.this, "Please Sign in yo Continue!!", Toast.LENGTH_SHORT)
+                    Toast.makeText(SignInActivity.this, "Please Sign in to Continue!!", Toast.LENGTH_SHORT)
                             .show();
-                    progressDialog.dismiss();
+                    ;
                 }
             }
         };
@@ -99,7 +103,15 @@ public class SignInActivity extends AppCompatActivity
         mPrefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
     }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(mPrefs.getBoolean("FIRST_RUN",true)){
+            Log.d("SIGN_ACT","Subscribing for Events");
+            FirebaseMessaging.getInstance().subscribeToTopic("EVENTS");
+            mPrefs.edit().putBoolean("FIRST_RUN", false).commit();
+        }
+    }
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         if (requestCode == REQUEST_CODE) {
@@ -110,6 +122,8 @@ public class SignInActivity extends AppCompatActivity
             }
         }
     }
+
+
     /**
      * When the Activity starts and stops, the app needs to connect and
      * disconnect the AuthListener
@@ -130,20 +144,14 @@ public class SignInActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(mPrefs.getBoolean("FIRST_RUN",true)){
-            FirebaseMessaging.getInstance().subscribeToTopic("EVENTS");
-            mPrefs.edit().putBoolean("FIRST_RUN", false).commit();
-        }
-    }
+
 
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSignIn:
+                signInWait.setVisibility(View.VISIBLE);
                 signUserIn();
                 break;
 

@@ -130,9 +130,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Get map of users in datasnapshot
                         //beaconDataMap((Map<String,Object>) dataSnapshot.getValue());
-                        dataSnapshot.getValue();
-                        Log.d(TAG,String.valueOf(dataSnapshot.getValue()));
-                        String res=String.valueOf(dataSnapshot.getValue());
+//                        dataSnapshot.getValue();
+//                        Log.d(TAG,String.valueOf(dataSnapshot.getValue()));
+//                        String res=String.valueOf(dataSnapshot.getValue());
 
                         for (DataSnapshot jobSnapshot: dataSnapshot.getChildren()) {
                             BeaconData beaconItem = jobSnapshot.getValue(BeaconData.class);
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+        moveTaskToBack(true);
         return;
 //        super.onBackPressed();
     }
@@ -431,10 +431,10 @@ public class MainActivity extends AppCompatActivity {
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             // action with ID action_settings was selected
-            case R.id.action_settings:
-                Log.d("MAIN_ACT", "Settings Selected");
+//            case R.id.action_settings:
+//                Log.d("MAIN_ACT", "Settings Selected");
 
-                break;
+//                break;
 
             case android.R.id.home:
                 MainActivity.this.finish();

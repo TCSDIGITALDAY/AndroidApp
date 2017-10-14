@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +55,7 @@ public class RegisterActivity  extends AppCompatActivity
     public TextView hiddenText;
     public String advid=null,taskResult=null;
     public Button btnCreate;
-    public ProgressDialog progressDialog;
+    public ProgressBar mPbRegister;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
@@ -73,6 +74,7 @@ public class RegisterActivity  extends AppCompatActivity
         etfirstname=(EditText)findViewById(R.id.firstname);
         etlastname=(EditText)findViewById(R.id.etlastname);
         hiddenText=(TextView)findViewById(R.id.hiddenView);
+        mPbRegister = (ProgressBar)findViewById(R.id.PBregister);
         hiddenText.setVisibility(View.INVISIBLE);
         // TODO: Get a reference to the Firebase auth object
         mAuth = FirebaseAuth.getInstance();
@@ -113,6 +115,7 @@ public class RegisterActivity  extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnCreate:
+                mPbRegister.setVisibility(View.VISIBLE);
                 createUserAccount();
                 break;
         }
@@ -173,10 +176,12 @@ public class RegisterActivity  extends AppCompatActivity
                                     String lastname=etlastname.getText().toString();
                                     String UId=mAuth.getCurrentUser().getUid();
                                     writeNewUser(UId,firstname,lastname,password,mail);
-                                    Toast.makeText(RegisterActivity.this, "User created", Toast.LENGTH_SHORT)
-                                            .show();
+//                                    Toast.makeText(RegisterActivity.this, "User created", Toast.LENGTH_SHORT)
+//                                            .show();
+                                    mPbRegister.setVisibility(View.INVISIBLE);
                                     RegisterActivity.this.finish();
                                 } else {
+                                    mPbRegister.setVisibility(View.INVISIBLE);
                                     Toast.makeText(RegisterActivity.this, "Account creation failed", Toast.LENGTH_SHORT)
                                             .show();
                                 }
@@ -187,17 +192,17 @@ public class RegisterActivity  extends AppCompatActivity
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
+//                          progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
                         //progressDialog.show();
 
-                        Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
-                                if(progressDialog!=null && progressDialog.isShowing()) {
-                                    progressDialog.dismiss();
-                                }
-                            }
-                        }, 3000); // 3000 milliseconds delay
+//                        Handler handler = new Handler();
+//                        handler.postDelayed(new Runnable() {
+//                            public void run() {
+//                                if(progressDialog!=null && progressDialog.isShowing()) {
+//                                    progressDialog.dismiss();
+//                                }
+//                            }
+//                        }, 3000); // 3000 milliseconds delay
                         Log.e(TAG, e.toString());
                         if (e instanceof FirebaseAuthUserCollisionException) {
                             updateStatus("This email address is already in use.");
@@ -205,7 +210,8 @@ public class RegisterActivity  extends AppCompatActivity
                         else {
                             updateStatus(e.getLocalizedMessage());
                         }
-                        Toast.makeText(RegisterActivity.this, "Failed", Toast.LENGTH_SHORT)
+                        mPbRegister.setVisibility(View.GONE);
+                        Toast.makeText(RegisterActivity.this, "Account creation failed", Toast.LENGTH_SHORT)
                                 .show();
                     }
                 });
@@ -216,21 +222,21 @@ public class RegisterActivity  extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        if((progressDialog != null) && progressDialog.isShowing() ){
-            progressDialog.dismiss();
-        }
+//        if((progressDialog != null) && progressDialog.isShowing() ){
+//            progressDialog.dismiss();
+//        }
     }
 
     private void writeNewUser( String uid,String fname,String lname, String password, String email) {
-        progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
+//        progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Creating User", true);
         //progressDialog.show();
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                progressDialog.dismiss();
-            }
-        }, 3000); // 3000 milliseconds delay
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            public void run() {
+//                progressDialog.dismiss();
+//            }
+//        }, 3000); // 3000 milliseconds delay
         Log.e(TAG, "Add New User to Firebase !!!");
         Users user = new Users();
         //user.setDeviceid(advid);
@@ -359,7 +365,7 @@ protected String doInBackground(Void... params) {
 
         @Override
         protected void onPreExecute() {
-        mActivity.progressDialog = ProgressDialog.show(context, "", "Getting Advertise Id", true);
+//        mActivity.progressDialog = ProgressDialog.show(context, "", "Getting Advertise Id", true);
     }
 
 @Override
@@ -371,7 +377,7 @@ protected void onPostExecute(String advertId) {
             //mActivity.btnCreate.setEnabled(true);
             mActivity.advid=advertId;
             mActivity.btnCreate.setVisibility(View.VISIBLE);
-            mActivity.progressDialog.dismiss();
+//            mActivity.progressDialog.dismiss();
     //sendAdvertId(advertId);
         }
 /*public String sendAdvertId(String advertId)

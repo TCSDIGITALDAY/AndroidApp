@@ -7,10 +7,10 @@ import java.util.ArrayList;
  */
 
 public class BeaconData {
-    String mversion,GeoLocation;
+    String mversion,location;
 
     public String getMversion() {
-        return mversion;
+        return this.mversion;
     }
 
     public void setMversion(String mversion) {
@@ -18,10 +18,10 @@ public class BeaconData {
     }
 
     public String getGeoLocation() {
-        return GeoLocation;
+        return this.location;
     }
 
-    public void setGeoLocation(String geoLocation) {
-        GeoLocation = geoLocation;
+    public void setGeoLocation(String location) {
+        this.location = location;
     }
 }
